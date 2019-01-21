@@ -1,11 +1,18 @@
 import {Sequelize} from 'sequelize-typescript';
 
-export const mainDB = new Sequelize(process.env.MAIN_DB);
+import { Guild } from '../models/Guild';
+import { GuildBlacklist } from '../models/GuildBlacklist';
+import { Lobby } from '../models/Lobby';
+import { User } from '../models/User';
+import { ENV } from '../utils/types';
 
-import {Guild} from '../models/Guild';
-// import {Queue} from '../models/Queue';
-// import {User} from '../models/User';
+export const DB = new Sequelize({
+    url: ENV.DB,
+    define: {
+        schema: 'siegebot',
+    },
+});
 
-mainDB.addModels([Guild]);
-mainDB.sync();
-mainDB.authenticate();
+DB.addModels([Guild, GuildBlacklist, Lobby, User]);
+DB.sync({ force: ENV.DANGER_DROP_BEFORE_START === 'true' });
+DB.authenticate();
